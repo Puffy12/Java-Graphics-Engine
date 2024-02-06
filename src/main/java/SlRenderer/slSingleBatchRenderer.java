@@ -1,24 +1,13 @@
 package SlRenderer;
 
-import org.joml.Matrix4f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
 
 import csc133.slWindow;
+import csc133.spot;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -27,15 +16,11 @@ public class slSingleBatchRenderer  {
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
     long window;
-    static int WIN_WIDTH = 1200, WIN_HEIGHT = 1200;
-    int WIN_POS_X = 30, WIN_POX_Y = 90;
-    private static final int OGL_MATRIX_SIZE = 16;
+
 
     // call glCreateProgram() here - we have no gl-context here
     int shader_program;
-    Matrix4f viewProjMatrix = new Matrix4f();
-    FloatBuffer myFloatBuffer = BufferUtils.createFloatBuffer(OGL_MATRIX_SIZE);
-    int vpMatLocation = 0, renderColorLocation = 0;
+    int vpMatLocation = 0;
 
     void renderObjects() {
 
@@ -54,7 +39,7 @@ public class slSingleBatchRenderer  {
                     float x = offsetX + col * (my_size + padding);
                     float y = offsetY + row * (my_size + padding);
     
-                    drawSquare(x, y, my_size);
+                    Draw.drawSquare(x, y, my_size);
                 }
             }
             glfwSwapBuffers(window);
@@ -63,6 +48,7 @@ public class slSingleBatchRenderer  {
   
     
     }
+
 
     public void render() {
         try {
@@ -77,9 +63,10 @@ public class slSingleBatchRenderer  {
         }
     } // void render()
 
+
     private void initGLFWindow() {
 
-        window = slWindow.create_window(WIN_WIDTH,WIN_HEIGHT);
+        window = slWindow.create_window(spot.WIN_WIDTH,spot.WIN_HEIGHT);
 
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
@@ -97,18 +84,20 @@ public class slSingleBatchRenderer  {
                     @Override
                     public void invoke(long window, int w, int h) {
                         if (w > 0 && h > 0) {
-                            WIN_WIDTH = w;
-                            WIN_HEIGHT = h;
+                            //spot.WIN_WIDTH = w;
+                            //spot.WIN_HEIGHT = h;
                         }
                     }
                 });
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, WIN_POS_X, WIN_POX_Y);
+        glfwSetWindowPos(window, spot.WIN_POS_X, spot.WIN_POX_Y);
         glfwMakeContextCurrent(window);
         int VSYNC_INTERVAL = 1;
         glfwSwapInterval(VSYNC_INTERVAL);
         glfwShowWindow(window);
     } // private void initGLFWindow()
+
+
     void renderLoop() {
         glfwPollEvents();
         initOpenGL();
@@ -118,11 +107,13 @@ public class slSingleBatchRenderer  {
             glfwWaitEvents();
         }
     } // void renderLoop()
+
+
     void initOpenGL() {
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
-        glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
+        glViewport(0, 0, spot.WIN_WIDTH, spot.WIN_HEIGHT);
         glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
         this.shader_program = glCreateProgram();
         int vs = glCreateShader(GL_VERTEX_SHADER);
@@ -146,44 +137,6 @@ public class slSingleBatchRenderer  {
         vpMatLocation = glGetUniformLocation(shader_program, "viewProjMatrix");
         return;
     } // void initOpenGL()
-
-    private void drawSquare(float x, float y, float my_size) {
-
-        
-        int vbo = glGenBuffers();
-        int ibo = glGenBuffers();
-
-        float[] vertices = {
-                x, y,
-                x + my_size, y,
-                x + my_size, y + my_size,
-                x, y + my_size
-        };
-
-        int[] indices = {0, 1, 2, 0, 2, 3};
-
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) BufferUtils.
-                createFloatBuffer(vertices.length).
-                put(vertices).flip(), GL_STATIC_DRAW);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) BufferUtils.
-                createIntBuffer(indices.length).
-                put(indices).flip(), GL_STATIC_DRAW);
-        glVertexPointer(2, GL_FLOAT, 0, 0L);
-        viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10);
-        glUniformMatrix4fv(vpMatLocation, false,
-               viewProjMatrix.get(myFloatBuffer));
-        glUniform3f(renderColorLocation, 1.0f, 0.498f, 0.153f);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        int VTD = 6; // need to process 6 Vertices To Draw 2 triangles
-        glDrawElements(GL_TRIANGLES, VTD, GL_UNSIGNED_INT, 0L);
-
-        // Clean up
-        glDeleteBuffers(vbo);
-        glDeleteBuffers(ibo);
-    }
 
 }
 
