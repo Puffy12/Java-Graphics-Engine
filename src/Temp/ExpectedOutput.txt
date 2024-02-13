@@ -1,0 +1,60 @@
+
+
+
+1 0 1 1 0 0 0 1 0 
+0 0 1 1 0 0 1 1 1 
+1 1 0 0 1 0 1 1 0 
+0 1 0 0 1 1 1 0 0 
+1 0 0 0 1 1 1 1 1 
+0 1 0 0 1 1 0 0 0 
+0 1 0 0 0 0 0 0 0 
+TwoDegreeNeighbors(0,0) --> 2
+
+0 1 1 0 1 1 0 0 0 
+0 1 1 0 0 1 1 0 0 
+0 1 0 1 0 1 1 1 0 
+0 0 1 0 1 0 1 0 1 
+0 1 1 0 0 0 0 0 1 
+1 0 0 1 1 1 0 0 1 
+1 0 1 1 0 1 1 1 0 
+TwoDegreeNeighbors(6, 8) --> 4
+
+1 1 1 1 0 0 1 1 0 
+0 0 0 0 1 1 1 0 0 
+1 1 0 0 0 0 0 1 1 
+0 1 1 0 1 1 0 1 0 
+1 1 1 1 1 0 1 1 0 
+1 1 1 1 0 1 1 0 0 
+1 1 0 1 1 1 1 1 1 
+TwoDegreeNeighbors(4,6) --> 5
+
+1 0 0 1 1 0 0 1 0 
+1 0 1 1 0 1 1 1 0 
+0 0 0 0 1 1 0 0 1 
+0 1 1 1 0 1 0 0 1 
+1 1 1 0 0 1 1 1 0 
+1 0 1 1 0 0 1 1 1 
+0 0 1 0 1 1 1 0 0 
+TwoDegreeNeighbors(0,6) --> 6
+
+0 1 0 1 0 1 0 1 0 
+0 0 1 1 0 0 0 1 1 
+0 0 0 1 0 0 0 0 1 
+0 1 0 0 0 1 1 0 0 
+1 1 1 0 0 1 1 0 0 
+1 0 0 1 0 1 0 1 0 
+0 0 1 0 1 0 0 0 1 
+Board updated:
+1 1 0 0 0 0 1 1 0 
+1 1 0 1 0 0 1 1 1 
+1 1 0 1 1 1 1 0 1 
+0 1 0 1 1 1 1 1 1 
+1 0 1 1 0 0 0 1 1 
+1 0 0 1 0 1 0 1 0 
+1 1 1 0 0 1 0 1 1 
+
+
+NOTICE: In the above, 4 <-- ROWS - (int)(ROWS/2), 6 <-- COLS - (int)(ROWS/2)
+
+Because the array is initialized randomly, each run will give you a different array
+and hence, the numbers printed will be different.
