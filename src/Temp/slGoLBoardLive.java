@@ -58,23 +58,11 @@ class slGoLBoardLive extends slGoLBoard{
             
         System.out.print(my_row + " " + my_col + " " +  liveCellArray[my_row][my_col]);
 
-        System.out.print(" -> ");   
+        System.out.print(" -> \n");
 
-        nums.add(liveCellArray[my_row][next_c]);     // Right
-        nums.add(liveCellArray[prev_r][next_c]);     // Below right
-        nums.add(liveCellArray[prev_r][my_col]);     // Below
-        nums.add(liveCellArray[prev_r][prev_c]);     // Below left
-        nums.add(liveCellArray[my_row][prev_c]);     // Left
-        nums.add(liveCellArray[next_r][prev_c]);     // Above left
-        nums.add(liveCellArray[next_r][my_col]);     // Above
-        nums.add(liveCellArray[next_r][next_c]);     // Above right
-
-
-        for (int i = 0; i < nums.size(); i++){
-            System.out.print(boolToInt(nums.get(i)) + " "); 
-            my_count += boolToInt(nums.get(i));
-        }
-            
+        System.out.print(liveCellArray[next_r][prev_c] + " " + liveCellArray[next_r][my_col] + " " + liveCellArray[next_r][next_c] + "\n"); //above
+        System.out.print(liveCellArray[my_row][prev_c] + " " + liveCellArray[my_row][my_col] + " " + liveCellArray[my_row][next_c] + "\n"); //same row 
+        System.out.print(liveCellArray[prev_r][prev_c] + " " + liveCellArray[prev_r][my_col] + " " + liveCellArray[prev_r][next_c] + "\n"); //below
 
 
         return my_count;
@@ -118,3 +106,20 @@ class slGoLBoardLive extends slGoLBoard{
     
 }
 
+        /* 
+        nums.add(liveCellArray[my_row][next_c]);     // Right
+        nums.add(liveCellArray[prev_r][next_c]);     // Below right
+        nums.add(liveCellArray[prev_r][my_col]);     // Below
+        nums.add(liveCellArray[prev_r][prev_c]);     // Below left
+        nums.add(liveCellArray[my_row][prev_c]);     // Left
+        nums.add(liveCellArray[next_r][prev_c]);     // Above left
+        nums.add(liveCellArray[next_r][my_col]);     // Above
+        nums.add(liveCellArray[next_r][next_c]);     // Above right
+
+
+        for (int i = 0; i < nums.size(); i++){
+            System.out.print(boolToInt(nums.get(i)) + " "); 
+            my_count += boolToInt(nums.get(i));
+        }
+            
+        */
