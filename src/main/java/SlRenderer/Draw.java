@@ -3,6 +3,8 @@ package SlRenderer;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
+
+import csc133.slCamera;
 import csc133.spot;
 
 import java.nio.FloatBuffer;
@@ -49,7 +51,13 @@ public class Draw {
                         createIntBuffer(indices.length).
                         put(indices).flip(), GL_STATIC_DRAW);
                 glVertexPointer(2, GL_FLOAT, 0, 0L);
-                viewProjMatrix.setOrtho(spot.ORTHO_LEFT, spot.ORTHO_RIGHT, spot.ORTHO_BOTTOM, spot.ORTHO_TOP, spot.ORTHO_NEAR, spot.ORTHO_FAR);
+                
+                slCamera my_cam = new slCamera();
+                my_cam.setProjectionOrtho();
+                viewProjMatrix = my_cam.getProjectionMatrix();
+                
+                //viewProjMatrix.setOrtho(spot.ORTHO_LEFT, spot.ORTHO_RIGHT, spot.ORTHO_BOTTOM, spot.ORTHO_TOP, spot.ORTHO_NEAR, spot.ORTHO_FAR);
+
                 glUniformMatrix4fv(vpMatLocation, false,
                 viewProjMatrix.get(myFloatBuffer));
                 glUniform3f(renderColorLocation, 1.0f, 0.498f, 0.153f);

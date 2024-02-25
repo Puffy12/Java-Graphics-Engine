@@ -28,10 +28,10 @@ public class slSingleBatchRenderer  {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            float my_size = 10.0f;
-            float padding = 5.0f;
-            float offsetX = -50, offsetY = -50;
-            int MAX_ROW = 5, MAX_COL = 7;
+            float my_size = 2.5f;
+            float padding = 1.0f;
+            float offsetX = -10, offsetY = -10;
+            int MAX_ROW = 20, MAX_COL = 18;
 
 
             for (int row = 0; row < MAX_ROW; ++row) {
@@ -140,34 +140,3 @@ public class slSingleBatchRenderer  {
 
 }
 
-    
-/*
-    void renderObjects() {
-        while (!glfwWindowShouldClose(window)) {
-            glfwPollEvents();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            int vbo = glGenBuffers();
-            int ibo = glGenBuffers();
-            float[] vertices = {-20f, -20f, 20f, -20f, 20f, 20f, -20f, 20f};
-            int[] indices = {0, 1, 2, 0, 2, 3};
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) BufferUtils.
-                    createFloatBuffer(vertices.length).
-                    put(vertices).flip(), GL_STATIC_DRAW);
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) BufferUtils.
-                    createIntBuffer(indices.length).
-                    put(indices).flip(), GL_STATIC_DRAW);
-            glVertexPointer(2, GL_FLOAT, 0, 0L);
-            viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10);
-            glUniformMatrix4fv(vpMatLocation, false,
-                    viewProjMatrix.get(myFloatBuffer));
-            glUniform3f(renderColorLocation, 1.0f, 0.498f, 0.153f);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            int VTD = 6; // need to process 6 Vertices To Draw 2 triangles
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
-            glfwSwapBuffers(window);
-        }
-    }
- */
