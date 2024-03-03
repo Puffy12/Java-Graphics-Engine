@@ -17,12 +17,12 @@ public class slCamera {
     }
 
     public void setProjectionOrtho(float left, float right, float bottom, float top, float near, float far) {
-        f_left = left;
-        f_right = right;
-        f_bottom = bottom;
-        f_top = top;
-        f_near = near;
-        f_far = far;
+        this.f_left = left;
+        this.f_right = right;
+        this.f_bottom = bottom;
+        this.f_top = top;
+        this.f_near = near;
+        this.f_far = far;
         setProjectionOrtho();
     }
 
@@ -44,6 +44,7 @@ public class slCamera {
     }
 
     public Matrix4f getViewMatrix() {
+        viewMatrix.lookAt(curLookFrom, curLookAt.add(defaultLookFrom), curUpVector);
         return viewMatrix;
     }
 

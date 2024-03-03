@@ -28,9 +28,9 @@ public class slSingleBatchRenderer  {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            float my_size = 2.5f;
-            float padding = 1.0f;
-            float offsetX = -10, offsetY = -10;
+            float my_size = 3f;
+            float padding = 1.2f;
+            float offsetX = -30f, offsetY = -50f;
             int MAX_ROW = 20, MAX_COL = 18;
 
 
