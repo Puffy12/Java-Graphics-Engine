@@ -17,52 +17,35 @@ class slGoLBoardLive extends slGoLBoard{
 
     @Override
     protected int countLiveTwoDegreeNeighbors(int rows, int cols){
-        Vector<Boolean> nums = new Vector<Boolean>();
+        
         int my_count = 0;
         int my_row = rows, my_col = cols;
 
-        int next_r = my_row + 1, 
-            next_c = my_col + 1,
-            prev_r = my_row - 1,
-            prev_c = my_col - 1;
+        int next_r = (my_row + 1) % NUM_ROWS, 
+            next_c = (my_col + 1) % NUM_COLS,
+            prev_r = (my_row - 1 + NUM_ROWS) % NUM_ROWS,
+            prev_c = (my_col - 1 + NUM_COLS) % NUM_COLS;
 
+        my_count += liveCellArray[prev_r][prev_c] ? 1 : 0;
+        my_count += liveCellArray[prev_r][my_col] ? 1 : 0;
+        my_count += liveCellArray[prev_r][next_c] ? 1 : 0;
         
-        // Adjust next_r, next_c, prev_r, and prev_c to wrap around if out of bounds
-        if (next_r < 0) {
-            next_r = NUM_ROWS - 1;
-        }
-        if (next_r >= NUM_ROWS) {
-            next_r = 0;
-        }
-        if (next_c < 0) {
-            next_c = NUM_COLS - 1;
-        }
-        if (next_c >= NUM_COLS) {
-            next_c = 0;
-        }
-        if (prev_r < 0) {
-            prev_r = NUM_ROWS - 1;
-        }
-        if (prev_r >= NUM_ROWS) {
-            prev_r = 0;
-        }
-        if (prev_c < 0) {
-            prev_c = NUM_COLS - 1;
-        }
-        if (prev_c >= NUM_COLS) {
-            prev_c = 0;
-        }
-       
+        my_count += liveCellArray[my_row][prev_c] ? 1 : 0;
+        my_count += liveCellArray[my_row][next_c] ? 1 : 0;
+        
+        my_count += liveCellArray[next_r][prev_c] ? 1 : 0;
+        my_count += liveCellArray[next_r][my_col] ? 1 : 0;
+        my_count += liveCellArray[next_r][next_c] ? 1 : 0;
 
         System.out.print(" ->");
-            
+        
         System.out.print(my_row + " " + my_col + " " +  liveCellArray[my_row][my_col]);
 
         System.out.print(" -> \n");
 
-        System.out.print(liveCellArray[next_r][prev_c] + " " + liveCellArray[next_r][my_col] + " " + liveCellArray[next_r][next_c] + "\n"); //above
+        System.out.print(liveCellArray[prev_r][prev_c] + " " + liveCellArray[prev_r][my_col] + " " + liveCellArray[prev_r][next_c] + "\n"); //above
         System.out.print(liveCellArray[my_row][prev_c] + " " + liveCellArray[my_row][my_col] + " " + liveCellArray[my_row][next_c] + "\n"); //same row 
-        System.out.print(liveCellArray[prev_r][prev_c] + " " + liveCellArray[prev_r][my_col] + " " + liveCellArray[prev_r][next_c] + "\n"); //below
+        System.out.print(liveCellArray[next_r][prev_c] + " " + liveCellArray[next_r][my_col] + " " + liveCellArray[next_r][next_c] + "\n"); //below
 
 
         return my_count;
@@ -72,25 +55,27 @@ class slGoLBoardLive extends slGoLBoard{
     protected int updateNextCellArray() {
         int retVal = 0;
 
-        int nln = 0;  // Number Live Neighbors
-        boolean ccs = true; // Current Cell Status
+        int live_count = 0;  // Number Live Neighbors
+        boolean my_cell = true; // Current Cell Status
         for (int row = 0; row < NUM_ROWS; ++row){
             for (int col = 0; col < NUM_COLS; ++col) {
-                ccs = liveCellArray[row][col];
-                nln = countLiveTwoDegreeNeighbors(row, col);
-                if (!ccs && nln == 3) {
+                my_cell = liveCellArray[row][col];
+                live_count = countLiveTwoDegreeNeighbors(row, col);
+                
+                if (!my_cell && live_count == 3) {
                     nextCellArray[row][col] = true;
                     ++retVal;
                 } else {
                     // Current Cell Status is true
-                    if (nln < 2 || nln > 3) {
+                    if (live_count < 2 || live_count > 3) {
                         nextCellArray[row][col] = false;
                     } else {
-                        // nln == 2 || nln == 3
+                        // live_count == 2 || live_count == 3
                         nextCellArray[row][col] = true;
                         ++retVal;
                     }
                 }
+
             }  // for (int row = 0; ...)
         }  //  for (int col = 0; ...)
 
@@ -106,20 +91,3 @@ class slGoLBoardLive extends slGoLBoard{
     
 }
 
-        /* 
-        nums.add(liveCellArray[my_row][next_c]);     // Right
-        nums.add(liveCellArray[prev_r][next_c]);     // Below right
-        nums.add(liveCellArray[prev_r][my_col]);     // Below
-        nums.add(liveCellArray[prev_r][prev_c]);     // Below left
-        nums.add(liveCellArray[my_row][prev_c]);     // Left
-        nums.add(liveCellArray[next_r][prev_c]);     // Above left
-        nums.add(liveCellArray[next_r][my_col]);     // Above
-        nums.add(liveCellArray[next_r][next_c]);     // Above right
-
-
-        for (int i = 0; i < nums.size(); i++){
-            System.out.print(boolToInt(nums.get(i)) + " "); 
-            my_count += boolToInt(nums.get(i));
-        }
-            
-        */

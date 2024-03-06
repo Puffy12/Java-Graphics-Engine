@@ -15,6 +15,8 @@
             for (int col = 0; col < NUM_COLS; ++col) {
                 ccs = liveCellArray[row][col];
                 nln = countLiveTwoDegreeNeighbors(row, col);
+
+                
                 if (!ccs && nln == 3) {
                     nextCellArray[row][col] = true;
                     ++retVal;

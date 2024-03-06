@@ -12,7 +12,7 @@ public class Main {
         //test_2();
         //test_3();
         //test_4();
-        //test_5();
+        test_5();
     }
 
     // print TwoDegreeNeighbors(0,0)
