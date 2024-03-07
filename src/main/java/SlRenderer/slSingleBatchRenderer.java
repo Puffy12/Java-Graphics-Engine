@@ -11,6 +11,8 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
+import org.joml.Vector3f;
+
 public class slSingleBatchRenderer  {
     GLFWErrorCallback errorCallback;
     GLFWKeyCallback keyCallback;
@@ -18,9 +20,11 @@ public class slSingleBatchRenderer  {
     long window;
 
 
+
     // call glCreateProgram() here - we have no gl-context here
     int shader_program;
     int vpMatLocation = 0;
+    Vector3f color =  new Vector3f(1f, 0f, 0f);
 
     void renderObjects() {
 
@@ -31,14 +35,15 @@ public class slSingleBatchRenderer  {
             float my_size = 3f;
             float padding = 1.2f;
             float offsetX = -30f, offsetY = -50f;
-            int MAX_ROW = 20, MAX_COL = 18;
+            int MAX_R = 18;
+            int MAX_C = 20;
 
-
-            for (int row = 0; row < MAX_ROW; ++row) {
-                for (int col = 0; col < MAX_COL; ++col) {
+            for (int row = 0; row < MAX_R; ++row) {
+                for (int col = 0; col < MAX_C; ++col) {
                     float x = offsetX + col * (my_size + padding);
                     float y = offsetY + row * (my_size + padding);
-    
+                    
+                    color = new Vector3f(1f, 1f, 0f);
                     Draw.drawSquare(x, y, my_size);
                 }
             }
@@ -128,7 +133,7 @@ public class slSingleBatchRenderer  {
         glShaderSource(fs,
                 "uniform vec3 color;" +
                         "void main(void) {" +
-                        " gl_FragColor = vec4(0.7f, 0.5f, 0.1f, 1.0f);" +
+                        " gl_FragColor = vec4(1.0f, 0.0f , 0.0f, 0.0f);" +
                         "}");
         glCompileShader(fs);
         glAttachShader(shader_program, fs);

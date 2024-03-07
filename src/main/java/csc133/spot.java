@@ -1,4 +1,8 @@
 package csc133;
+import org.joml.Vector3f;
+
+
+
 
 public class spot {
     //viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10);
@@ -16,5 +20,11 @@ public class spot {
 
 
     public static final int WIN_POS_X = 30, WIN_POX_Y = 90;
+
+    public static final int MAX_ROW = 20; 
+    public static final int MAX_COL = 18;
+
+    public static final Vector3f Alive_color = new Vector3f(0f, 1f, 1f);
+    public static final Vector3f Dead_color = new Vector3f(1f, 0f, 0f);
 
 }

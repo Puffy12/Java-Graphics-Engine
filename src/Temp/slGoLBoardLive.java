@@ -65,14 +65,18 @@ class slGoLBoardLive extends slGoLBoard{
                 if (!my_cell && live_count == 3) {
                     nextCellArray[row][col] = true;
                     ++retVal;
+                    continue;
                 } else {
                     // Current Cell Status is true
-                    if (live_count < 2 || live_count > 3) {
-                        nextCellArray[row][col] = false;
-                    } else {
-                        // live_count == 2 || live_count == 3
+                    if (live_count == 2 || live_count == 3) {
                         nextCellArray[row][col] = true;
+                        continue;
                         ++retVal;
+                    } else {
+                        //if(live_count < 2 || live_count > 3)
+                        nextCellArray[row][col] = false;
+                        continue;
+                        
                     }
                 }
 

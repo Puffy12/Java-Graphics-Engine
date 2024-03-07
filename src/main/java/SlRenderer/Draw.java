@@ -2,6 +2,7 @@ package SlRenderer;
 
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import csc133.slCamera;
@@ -29,6 +30,7 @@ public class Draw {
         static int renderColorLocation = 0;
 
         public static void drawSquare(float x, float y, float my_size) {
+               
                 int vbo = glGenBuffers();
                 int ibo = glGenBuffers();
 
@@ -60,7 +62,7 @@ public class Draw {
 
                 glUniformMatrix4fv(vpMatLocation, false,
                 viewProjMatrix.get(myFloatBuffer));
-                glUniform3f(renderColorLocation, 1.0f, 0.498f, 0.153f);
+                glUniform3f(renderColorLocation, 1f, 0f, 1f);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 int VTD = 6; // need to process 6 Vertices To Draw 2 triangles
                 glDrawElements(GL_TRIANGLES, VTD, GL_UNSIGNED_INT, 0L);
