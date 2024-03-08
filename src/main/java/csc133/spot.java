@@ -1,5 +1,5 @@
 package csc133;
-import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 
 
@@ -24,7 +24,7 @@ public class spot {
     public static final int MAX_ROW = 20; 
     public static final int MAX_COL = 18;
 
-    public static final Vector3f Alive_color = new Vector3f(0f, 1f, 1f);
-    public static final Vector3f Dead_color = new Vector3f(1f, 0f, 0f);
+    public static final Vector4f Alive_color = new Vector4f(0.0f, 1.0f, 0.0f, 1.0f);
+    public static final Vector4f Dead_color = new Vector4f(1.0f, 0f, 0f, 1.0f);
 
 }

@@ -1,4 +1,4 @@
-package Temp;
+package slGoBoard;
 
 import java.io.*;
 import java.util.*;

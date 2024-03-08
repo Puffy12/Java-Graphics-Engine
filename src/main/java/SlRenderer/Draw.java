@@ -8,6 +8,7 @@ import org.lwjgl.BufferUtils;
 import csc133.slCamera;
 import csc133.spot;
 
+
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL11.*;
@@ -29,7 +30,7 @@ public class Draw {
         static int vpMatLocation = 0;
         static int renderColorLocation = 0;
 
-        public static void drawSquare(float x, float y, float my_size) {
+        public static void drawSquare(float x, float y, float my_size, int shader_program) {
                
                 int vbo = glGenBuffers();
                 int ibo = glGenBuffers();
@@ -62,11 +63,15 @@ public class Draw {
 
                 glUniformMatrix4fv(vpMatLocation, false,
                 viewProjMatrix.get(myFloatBuffer));
-                glUniform3f(renderColorLocation, 1f, 0f, 1f);
+                int colorLocation = glGetUniformLocation(shader_program, "color");
+
+                glUniform3f(colorLocation, 1f, 1f, 0f);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 int VTD = 6; // need to process 6 Vertices To Draw 2 triangles
                 glDrawElements(GL_TRIANGLES, VTD, GL_UNSIGNED_INT, 0L);
 
+        
+            
                 // Clean up
                 glDeleteBuffers(vbo);
                 glDeleteBuffers(ibo);
