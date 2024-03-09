@@ -1,14 +1,16 @@
 package slGoBoard;
 
-import java.io.*;
-import java.util.*;
-
-class slGoLBoardLive extends slGoLBoard{
+public class slGoLBoardLive extends slGoLBoard{
 
 
-    protected slGoLBoardLive(int numRows, int numCols) {
+    public slGoLBoardLive(int numRows, int numCols) {
         super(numRows, numCols);
         //TODO Auto-generated constructor stub
+    }
+
+    public boolean return_Bool(int Row, int Col){
+
+        return liveCellArray[Row][Col];
     }
 
     private int boolToInt(boolean b) {

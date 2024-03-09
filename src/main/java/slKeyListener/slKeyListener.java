@@ -8,7 +8,7 @@ public class slKeyListener {
     private static final int MAX_KEYS = 400;
     private boolean keyPressed[] = new boolean[MAX_KEYS]; // some "reasonable" number!
 
-    private slKeyListener() {
+    public slKeyListener() {
 
     }
 

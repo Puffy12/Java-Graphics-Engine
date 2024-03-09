@@ -1,18 +1,33 @@
 package SlRenderer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
+import csc133.slCamera;
 import csc133.slWindow;
 import csc133.spot;
 import slKeyListener.slKeyListener;
 
+import static csc133.slWindow.destroy_oglwindow;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-import slGoBoard.*;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import org.joml.Matrix4f;
+
+import slGoBoard.slGoLBoardLive;
 
 public class slSingleBatchRenderer  {
     GLFWErrorCallback errorCallback;
@@ -23,8 +38,10 @@ public class slSingleBatchRenderer  {
 
 
     // call glCreateProgram() here - we have no gl-context here
-    int shader_program;
-    int vpMatLocation = 0;
+    static int shader_program;
+    static Matrix4f viewProjMatrix = new Matrix4f();
+    static FloatBuffer myFloatBuffer = BufferUtils.createFloatBuffer(spot.OGL_MATRIX_SIZE);
+    static int vpMatLocation = 0, renderColorLocation = 0;
 
     double frameRate = 0;
 
@@ -35,37 +52,41 @@ public class slSingleBatchRenderer  {
     boolean displayFrameRate = false;
     boolean renderingPaused = false;
    
-    private static slGoLBoard my_board;
-    
-    void renderObjects(){
+    static slGoLBoardLive my_board = new slGoLBoardLive(spot.MAX_ROW, spot.MAX_COL);
+
+
+    private void renderObjects(){
 
         while (!glfwWindowShouldClose(window)) {
-            
+
             glfwPollEvents();
+            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
+            handleKeyInputs();
 
             if (renderingPaused) {
                 continue; // Skip rendering if paused
+            }else{
+                draw_square_array();
             }
-
-            handleKeyInputs();
-
-            draw_square_array();
 
             glfwSwapBuffers(window);
         }
 
     }
-  
-    
+
     private void handleKeyInputs() {
 
+        currentTime = System.nanoTime();
         double elapsedTime = (currentTime - lastTime) / 1_000_000_000.0; // Convert nanoseconds to seconds
         frameRate = 1 / elapsedTime;
         lastTime = currentTime;
 
-        
-        if (slKeyListener.isKeyPressed(GLFW_KEY_D)) {// D key is currently pressed
+        if (slKeyListener.isKeyPressed(GLFW_KEY_A)) {
+            System.out.println("The 'A' button is pressed");
+        }
+        if (slKeyListener.isKeyPressed(GLFW_KEY_D)) {
             Delay_on = !Delay_on;
         }
         if(Delay_on){
@@ -82,7 +103,7 @@ public class slSingleBatchRenderer  {
             System.out.println("FPS:" + frameRate);
         }
         if(slKeyListener.isKeyPressed(GLFW_KEY_ESCAPE)){
-            glfwSetWindowShouldClose(window, true);
+            destroy_oglwindow();
         }
 
         if (slKeyListener.isKeyPressed(GLFW_KEY_SLASH)) {
@@ -105,24 +126,112 @@ public class slSingleBatchRenderer  {
    
     }
 
+    private void initOpenGL() {
+        GL.createCapabilities();
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glViewport(0, 0, spot.WIN_WIDTH, spot.WIN_HEIGHT);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        shader_program = glCreateProgram();
+        int vs = glCreateShader(GL_VERTEX_SHADER);
+        Matrix4f viewProjMatrix = new Matrix4f();
+        glShaderSource(vs,
+                "uniform mat4 viewProjMatrix;" +
+                        "void main(void) {" +
+                        " gl_Position = viewProjMatrix * gl_Vertex;" +
+                        "}");
+        glCompileShader(vs);
+        glAttachShader(shader_program, vs);
+        int fs = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fs,
+                "uniform vec3 renderColorLocation;" + 
+                        "void main(void) {" +
+                        " gl_FragColor = vec4(renderColorLocation, 1.0);" + 
+                        "}");
+        glCompileShader(fs);
+        glAttachShader(shader_program, fs);
+        glLinkProgram(shader_program);
+        glUseProgram(shader_program);
+        vpMatLocation = glGetUniformLocation(shader_program, "viewProjMatrix");
+        return;
+    }
+
+    private static void drawSquare(float x, float y, float my_size, boolean color_switch) {
+            
+            int vbo = glGenBuffers();
+            int ibo = glGenBuffers();
+
+            float[] vertices = {
+                    x, y,
+                    x + my_size, y,
+                    x + my_size, y + my_size,
+                    x, y + my_size
+            };
+
+            int[] indices = {0, 1, 2, 0, 2, 3};
+
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) BufferUtils.
+                    createFloatBuffer(vertices.length).
+                    put(vertices).flip(), GL_STATIC_DRAW);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, (IntBuffer) BufferUtils.
+                    createIntBuffer(indices.length).
+                    put(indices).flip(), GL_STATIC_DRAW);
+            glVertexPointer(2, GL_FLOAT, 0, 0L);
+            
+            slCamera my_cam = new slCamera();
+            my_cam.setProjectionOrtho();
+            viewProjMatrix = my_cam.getProjectionMatrix();
+            
+            //viewProjMatrix.setOrtho(spot.ORTHO_LEFT, spot.ORTHO_RIGHT, spot.ORTHO_BOTTOM, spot.ORTHO_TOP, spot.ORTHO_NEAR, spot.ORTHO_FAR);
+
+            glUniformMatrix4fv(vpMatLocation, false,
+            viewProjMatrix.get(myFloatBuffer));
+            int colorLocation = glGetUniformLocation(shader_program, "renderColorLocation");
+
+            if(color_switch){
+                glUniform3f(colorLocation, spot.Alive_color.x, spot.Alive_color.y, spot.Alive_color.z);
+            }else{
+                glUniform3f(colorLocation, spot.Dead_color.x, spot.Dead_color.y, spot.Dead_color.z);
+            }
+            
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            int VTD = 6; // need to process 6 Vertices To Draw 2 triangles
+            glDrawElements(GL_TRIANGLES, VTD, GL_UNSIGNED_INT, 0L);
+
+    
+        
+            // Clean up
+            glDeleteBuffers(vbo);
+            glDeleteBuffers(ibo);
+            
+    }
+
+
 
     private void draw_square_array() {
         
+        int MAX_R = spot.MAX_ROW;
+        int MAX_C = spot.MAX_COL;
+        
+        float my_size = 5f;
+        float padding = 1.5f;
+        float offsetX = -50f, offsetY = -50f;
 
-
-        float my_size = 3f;
-        float padding = 1.2f;
-        float offsetX = -30f, offsetY = -50f;
-        int MAX_R = 18;
-        int MAX_C = 20;
+        boolean color_switch = true;
 
         for (int row = 0; row < MAX_R; ++row) {
             for (int col = 0; col < MAX_C; ++col) {
                 float x = offsetX + col * (my_size + padding);
                 float y = offsetY + row * (my_size + padding);
                 
+
+                color_switch = my_board.return_Bool(row,col);
+                drawSquare(x, y, my_size,color_switch);
                 
-                Draw.drawSquare(x, y, my_size, shader_program);
+                
             }
         }
         glfwSwapBuffers(window);
@@ -146,7 +255,7 @@ public class slSingleBatchRenderer  {
 
     private void initGLFWindow() {
 
-        window = slWindow.create_window(spot.WIN_WIDTH,spot.WIN_HEIGHT);
+        window = slWindow.get_oglwindow(spot.WIN_WIDTH,spot.WIN_HEIGHT);
 
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
@@ -170,7 +279,7 @@ public class slSingleBatchRenderer  {
                     }
                 });
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, spot.WIN_POS_X, spot.WIN_POX_Y);
+        glfwSetWindowPos(window, spot.WIN_POS_X, spot.WIN_POS_Y);
         glfwMakeContextCurrent(window);
         int VSYNC_INTERVAL = 1;
         glfwSwapInterval(VSYNC_INTERVAL);
@@ -189,34 +298,7 @@ public class slSingleBatchRenderer  {
     } // void renderLoop()
 
 
-    void initOpenGL() {
-        GL.createCapabilities();
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glViewport(0, 0, spot.WIN_WIDTH, spot.WIN_HEIGHT);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        this.shader_program = glCreateProgram();
-        int vs = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vs,
-                "uniform mat4 viewProjMatrix;" +
-                        "void main(void) {" +
-                        " gl_Position = viewProjMatrix * gl_Vertex;" +
-                        "}");
-        glCompileShader(vs);
-        glAttachShader(shader_program, vs);
-        int fs = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fs,
-                "uniform vec3 color;" +
-                        "void main(void) {" +
-                        " gl_FragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);" +
-                        "}");
-        glCompileShader(fs);
-        glAttachShader(shader_program, fs);
-        glLinkProgram(shader_program);
-        glUseProgram(shader_program);
-        vpMatLocation = glGetUniformLocation(shader_program, "viewProjMatrix");
-        return;
-    } // void initOpenGL()
+
     
 }
 
