@@ -39,22 +39,13 @@ public class slGoLBoardLive extends slGoLBoard{
         my_count += liveCellArray[next_r][my_col] ? 1 : 0;
         my_count += liveCellArray[next_r][next_c] ? 1 : 0;
 
-        System.out.print(" ->");
-        
-        System.out.print(my_row + " " + my_col + " " +  liveCellArray[my_row][my_col]);
-
-        System.out.print(" -> \n");
-
-        System.out.print(liveCellArray[prev_r][prev_c] + " " + liveCellArray[prev_r][my_col] + " " + liveCellArray[prev_r][next_c] + "\n"); //above
-        System.out.print(liveCellArray[my_row][prev_c] + " " + liveCellArray[my_row][my_col] + " " + liveCellArray[my_row][next_c] + "\n"); //same row 
-        System.out.print(liveCellArray[next_r][prev_c] + " " + liveCellArray[next_r][my_col] + " " + liveCellArray[next_r][next_c] + "\n"); //below
 
 
         return my_count;
     }
 
     @Override
-    protected int updateNextCellArray() {
+	public int updateNextCellArray() {
         int retVal = 0;
 
         int live_count = 0;  // Number Live Neighbors
@@ -98,3 +89,14 @@ public class slGoLBoardLive extends slGoLBoard{
     
 }
 
+/*
+        System.out.print(" ->");
+        
+        System.out.print(my_row + " " + my_col + " " +  liveCellArray[my_row][my_col]);
+
+        System.out.print(" -> \n");
+
+        System.out.print(liveCellArray[prev_r][prev_c] + " " + liveCellArray[prev_r][my_col] + " " + liveCellArray[prev_r][next_c] + "\n"); //above
+        System.out.print(liveCellArray[my_row][prev_c] + " " + liveCellArray[my_row][my_col] + " " + liveCellArray[my_row][next_c] + "\n"); //same row 
+        System.out.print(liveCellArray[next_r][prev_c] + " " + liveCellArray[next_r][my_col] + " " + liveCellArray[next_r][next_c] + "\n"); //below
+ */

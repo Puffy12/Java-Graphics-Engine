@@ -31,5 +31,7 @@ public class spot {
 
     public static final Vector3f VEC_RC = new Vector3f(0.0f, 1.0f, 0.0f); // "vector render color" for square
 
+    public static final String FILE_EXTENSION = ".ca";
+
 
 }

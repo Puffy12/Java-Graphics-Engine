@@ -22,6 +22,14 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
+import java.io.*;
+import java.util.Scanner;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -29,12 +37,12 @@ import org.joml.Matrix4f;
 
 import slGoBoard.slGoLBoardLive;
 
-public class slSingleBatchRenderer  {
+public class slSingleBatchRenderer {
     GLFWErrorCallback errorCallback;
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
     long window;
-    slKeyListener listener;
+
 
 
     // call glCreateProgram() here - we have no gl-context here
@@ -51,6 +59,8 @@ public class slSingleBatchRenderer  {
     boolean Delay_on = false;
     boolean displayFrameRate = false;
     boolean renderingPaused = false;
+    boolean printBoard = false;
+    boolean endRendering = false;
    
     static slGoLBoardLive my_board = new slGoLBoardLive(spot.MAX_ROW, spot.MAX_COL);
 
@@ -62,32 +72,44 @@ public class slSingleBatchRenderer  {
             glfwPollEvents();
             
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
+
+            glfwSetKeyCallback(window, slKeyListener::keyCallback);
+
             handleKeyInputs();
 
-            if (renderingPaused) {
-                continue; // Skip rendering if paused
-            }else{
-                draw_square_array();
+            handleStates();
+
+            /* This is what updates the board 
+            if(!endRendering){
+                try {
+                    Thread.sleep(250);
+                    int temp = my_board.updateNextCellArray();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+             */
+            
 
             glfwSwapBuffers(window);
         }
 
     }
 
-    private void handleKeyInputs() {
-
+    private void handleStates(){
+        
         currentTime = System.nanoTime();
         double elapsedTime = (currentTime - lastTime) / 1_000_000_000.0; // Convert nanoseconds to seconds
         frameRate = 1 / elapsedTime;
         lastTime = currentTime;
 
-        if (slKeyListener.isKeyPressed(GLFW_KEY_A)) {
-            System.out.println("The 'A' button is pressed");
+        if (renderingPaused) {
+            return; // Skip rendering if paused
+        }else{
+            draw_square_array();
         }
-        if (slKeyListener.isKeyPressed(GLFW_KEY_D)) {
-            Delay_on = !Delay_on;
+        if (displayFrameRate) {
+            System.out.println("FPS:" + frameRate);
         }
         if(Delay_on){
             try {
@@ -96,34 +118,86 @@ public class slSingleBatchRenderer  {
                 e.printStackTrace();
             }
         }
-        if(slKeyListener.isKeyPressed(GLFW_KEY_F)){
-            displayFrameRate = !displayFrameRate;
-        }
-        if (displayFrameRate) {
-            System.out.println("FPS:" + frameRate);
-        }
-        if(slKeyListener.isKeyPressed(GLFW_KEY_ESCAPE)){
-            destroy_oglwindow();
+
+    }
+
+    private void handleKeyInputs() {
+
+
+        if (slKeyListener.isKeyPressed(GLFW_KEY_D)) {
+            Delay_on = !Delay_on;
+            slKeyListener.resetKeypressEvent(GLFW_KEY_D);
         }
 
-        if (slKeyListener.isKeyPressed(GLFW_KEY_SLASH)) {
-            // Print usage instructions
-            //printUsage();
+        if(slKeyListener.isKeyPressed(GLFW_KEY_F)){
+            slKeyListener.resetKeypressEvent(GLFW_KEY_F);
+            displayFrameRate = !displayFrameRate;
+        }
+
+        if(slKeyListener.isKeyPressed(GLFW_KEY_ESCAPE)){
+            endRendering = true;
+            slKeyListener.resetKeypressEvent(GLFW_KEY_ESCAPE);
+            
+            destroy_oglwindow();
+            System.out.println("Bye Bye (Press ctrl c)");
         }
 
         if (slKeyListener.isKeyPressed(GLFW_KEY_H)) {
-            renderingPaused = !renderingPaused;
+            slKeyListener.resetKeypressEvent(GLFW_KEY_H);
+            renderingPaused = true;
+        }
+        if (slKeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+            slKeyListener.resetKeypressEvent(GLFW_KEY_SPACE);
+            renderingPaused = false;
+        }
+
+        if (slKeyListener.isKeyPressed(GLFW.GLFW_KEY_SLASH)) {
+            if (!printBoard) {
+                my_board.printGoLBoard();
+                System.out.println("FYI, Board is printed upside down \n");
+
+                System.out.println("Usage:");
+                System.out.println("  D: Toggle Delay");
+                System.out.println("  F: Toggle Display Frame Rate");
+                System.out.println("  ESCAPE: Exit the program");
+                System.out.println("  H: Pause rendering");
+                System.out.println("  SPACE: Restart rendering");
+                System.out.println("  R: Reset the GoL Board");
+                System.out.println("  S: Save the GoL Board to a file");
+                System.out.println("  L: Load the GoL Board from a file");
+                printBoard = true;
+            }
+        } else {
+            printBoard = false; 
+        }
+
+        if(slKeyListener.isKeyPressed(GLFW_KEY_R)){
+            my_board = new slGoLBoardLive(spot.MAX_ROW, spot.MAX_COL);
+            slKeyListener.resetKeypressEvent(GLFW_KEY_R);
+            System.out.println("Board Reset");
         }
 
         if(slKeyListener.isKeyPressed(GLFW_KEY_S)){
-            //Save 
-            //        if (!fileName.toLowerCase().endsWith(".ca")) {fileName += ".ca";
+            String filename = "example"; 
+            saveToFile(filename);
+            slKeyListener.resetKeypressEvent(GLFW_KEY_S);
         }
 
         if(slKeyListener.isKeyPressed(GLFW_KEY_L)){
             //load
+            loadFromFile();
+            slKeyListener.resetKeypressEvent(GLFW_KEY_L);
         }
    
+    }
+
+
+    private void loadFromFile() {
+
+    }
+
+    private void saveToFile(String filename) {
+ 
     }
 
     private void initOpenGL() {
