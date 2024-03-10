@@ -23,12 +23,9 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 import java.io.*;
-import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -38,32 +35,33 @@ import org.joml.Matrix4f;
 import slGoBoard.slGoLBoardLive;
 
 public class slSingleBatchRenderer {
-    GLFWErrorCallback errorCallback;
-    GLFWKeyCallback keyCallback;
-    GLFWFramebufferSizeCallback fbCallback;
-    long window;
+    private GLFWErrorCallback errorCallback;
+    private GLFWKeyCallback keyCallback;
+    private GLFWFramebufferSizeCallback fbCallback;
+    private long window;
 
 
 
     // call glCreateProgram() here - we have no gl-context here
-    static int shader_program;
-    static Matrix4f viewProjMatrix = new Matrix4f();
-    static FloatBuffer myFloatBuffer = BufferUtils.createFloatBuffer(spot.OGL_MATRIX_SIZE);
-    static int vpMatLocation = 0, renderColorLocation = 0;
+    private static int shader_program;
+    private static Matrix4f viewProjMatrix = new Matrix4f();
+    private static FloatBuffer myFloatBuffer = BufferUtils.createFloatBuffer(spot.OGL_MATRIX_SIZE);
+    private static int vpMatLocation = 0, renderColorLocation = 0;
 
-    double frameRate = 0;
+    private double frameRate = 0;
 
-    long lastTime = System.nanoTime();
-    long currentTime = System.nanoTime();
+    private long lastTime = System.nanoTime();
+    private long currentTime = System.nanoTime();
 
-    boolean Delay_on = false;
-    boolean displayFrameRate = false;
-    boolean renderingPaused = false;
-    boolean printBoard = false;
-    boolean endRendering = false;
+    private boolean Delay_on = false;
+    private boolean displayFrameRate = false;
+    private boolean renderingPaused = false;
+    private boolean printBoard = false;
+    private boolean endRendering = false;
    
-    static slGoLBoardLive my_board = new slGoLBoardLive(spot.MAX_ROW, spot.MAX_COL);
+    private slGoLBoardLive my_board = new slGoLBoardLive(spot.MAX_ROW, spot.MAX_COL);
 
+    
 
     private void renderObjects(){
 
@@ -79,7 +77,7 @@ public class slSingleBatchRenderer {
 
             handleStates();
 
-            /* This is what updates the board 
+            /* This is what updates the board using the updateNextCellArray
             if(!endRendering){
                 try {
                     Thread.sleep(250);
@@ -165,6 +163,7 @@ public class slSingleBatchRenderer {
                 System.out.println("  R: Reset the GoL Board");
                 System.out.println("  S: Save the GoL Board to a file");
                 System.out.println("  L: Load the GoL Board from a file");
+                System.out.println("  Custom! U: Update the board given the (countLiveTwoDegreeNeighbors rule in the updateNextCellArray function) \n");
                 printBoard = true;
             }
         } else {
@@ -177,27 +176,93 @@ public class slSingleBatchRenderer {
             System.out.println("Board Reset");
         }
 
-        if(slKeyListener.isKeyPressed(GLFW_KEY_S)){
-            String filename = "example"; 
-            saveToFile(filename);
+        if (slKeyListener.isKeyPressed(GLFW_KEY_S)) {
+            saveToFile();
             slKeyListener.resetKeypressEvent(GLFW_KEY_S);
+            System.out.println("File Saved");
         }
 
-        if(slKeyListener.isKeyPressed(GLFW_KEY_L)){
-            //load
+        if (slKeyListener.isKeyPressed(GLFW_KEY_L)) {
             loadFromFile();
             slKeyListener.resetKeypressEvent(GLFW_KEY_L);
+            System.out.println("File Loaded");
+        }
+
+        //a custom comand by me to update the cell array 
+        if (slKeyListener.isKeyPressed(GLFW_KEY_U)) {
+            int temp = 0;
+            try {
+                Thread.sleep(250);
+                temp = my_board.updateNextCellArray();
+                
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            slKeyListener.resetKeypressEvent(GLFW_KEY_U);
+            System.out.println("Board Updated (Custom Command) -> "+ temp);
         }
    
     }
 
 
-    private void loadFromFile() {
+    private void saveToFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Board");
+        fileChooser.setFileFilter(new FileNameExtensionFilter("CA Files (*.ca)", "ca"));
+        int userSelection = fileChooser.showSaveDialog(null);
 
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            try (FileOutputStream fileOut = new FileOutputStream(fileToSave);
+                 ObjectOutputStream objectOut = new ObjectOutputStream(fileOut)) {
+
+                
+                for (int row = 0; row < spot.MAX_ROW; ++row) {
+                    for (int col = 0; col < spot.MAX_COL; ++col) {
+                        objectOut.writeObject(my_board.return_Bool(row, col));
+                    }  
+                    
+                } 
+              
+                System.out.println("Board saved successfully to " + fileToSave.getAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("Error saving board to file: " + e.getMessage());
+            }
+        }
     }
 
-    private void saveToFile(String filename) {
- 
+    private void loadFromFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Load Board");
+        
+        int userSelection = fileChooser.showOpenDialog(null);
+
+    
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToLoad = fileChooser.getSelectedFile();
+            try (FileInputStream fileIn = new FileInputStream(fileToLoad);
+                 ObjectInputStream objectIn = new ObjectInputStream(fileIn)) {
+                
+                slGoLBoardLive loadedBoard = new slGoLBoardLive(spot.MAX_ROW, spot.MAX_COL);
+                for (int row = 0; row < spot.MAX_ROW; ++row) {
+                    for (int col = 0; col < spot.MAX_COL; ++col) {
+                        boolean temp = (boolean) objectIn.readObject();
+                        if(temp){
+                            loadedBoard.setCellAlive(row,col);
+                        }else{
+                            loadedBoard.setCellDead(row,col);
+                        }
+                    }
+                }
+    
+                // Assuming my_board is a field of the current class
+                my_board = loadedBoard;
+    
+                System.out.println("Board loaded successfully from " + fileToLoad.getAbsolutePath());
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Error loading board from file: " + e.getMessage());
+            }
+        }
     }
 
     private void initOpenGL() {
@@ -361,7 +426,7 @@ public class slSingleBatchRenderer {
     } // private void initGLFWindow()
 
 
-    void renderLoop() {
+    private void renderLoop() {
         glfwPollEvents();
         initOpenGL();
         renderObjects();

@@ -71,11 +71,11 @@ public abstract class slGoLBoard {
         return nextCellArray;
     }
 
-    protected void setCellAlive(int row, int col){
+    public void setCellAlive(int row, int col){
         liveCellArray[row][col] = true;
     }
 
-    protected void setCellDead(int row, int col){
+    public void setCellDead(int row, int col){
         liveCellArray[row][col] = false;
     }
 
