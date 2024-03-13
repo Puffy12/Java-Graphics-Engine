@@ -65,7 +65,7 @@ public class slSingleBatchRenderer {
 
     private void renderObjects(){
 
-        while (!glfwWindowShouldClose(window)) {
+        while (!endRendering) {
 
             glfwPollEvents();
             
@@ -133,10 +133,11 @@ public class slSingleBatchRenderer {
         }
 
         if(slKeyListener.isKeyPressed(GLFW_KEY_ESCAPE)){
-            endRendering = true;
+
             slKeyListener.resetKeypressEvent(GLFW_KEY_ESCAPE);
-            
-            destroy_oglwindow();
+            //destroy_oglwindow();
+            endRendering = true;
+
             System.out.println("Bye Bye (Press ctrl c)");
         }
 
@@ -431,7 +432,7 @@ public class slSingleBatchRenderer {
         initOpenGL();
         renderObjects();
         /* Process window messages in the main thread */
-        while (!glfwWindowShouldClose(window)) {
+        while (!endRendering) {
             glfwWaitEvents();
         }
     } // void renderLoop()
