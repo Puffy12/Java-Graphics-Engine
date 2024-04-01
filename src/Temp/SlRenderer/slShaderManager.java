@@ -47,7 +47,6 @@ public class slShaderManager {
 
     public int compile_shader() {
         shader_program = glCreateProgram(); // Assign to shader_program field
-        System.out.println("Exiting renderLoop");
         int VSID = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(VSID, vertexShaderSource);
         glCompileShader(VSID);

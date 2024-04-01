@@ -9,7 +9,7 @@ import static csc133.spot.*;
    
 public class slCamera implements CameraInterface{
     private final Matrix4f projectionMatrix, viewMatrix;
-    public Vector3f defaultLookFrom = new Vector3f(0.0f, 0.0f, 00.0f);
+    public Vector3f defaultLookFrom = new Vector3f(0.0f, 0.0f, 0.0f);
     public Vector3f defaultLookAt = new Vector3f(0.0f, 0.0f, -1.0f);
     public Vector3f defaultUpVector = new Vector3f(0.0f, 1.0f, 0.0f);
 
