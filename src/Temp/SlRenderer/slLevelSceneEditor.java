@@ -27,17 +27,18 @@ public class slLevelSceneEditor {
     private final float uvmin = 0.0f, uvmax = 1.0f;
 
     private final float[] vertexArray = {
-        // Vertices             // Colors          // UV coordinates
-        xmax, ymax, zmax,      1.0f, 1.0f, 1.0f,  uvmax, uvmax, // Top right
-        xmax, ymin, zmax,      1.0f, 1.0f, 1.0f,  uvmax, uvmin, // Bottom right
-        xmin, ymin, zmin,      1.0f, 1.0f, 1.0f,  uvmin, uvmin, // Bottom left
-        xmin, ymax, zmin,      1.0f, 1.0f, 1.0f,  uvmin, uvmax  // Top left
+        // Vertices           // Colors          // UV coordinates
+        xmax, ymax, zmax,    1.0f, 1.0f, 1.0f, 1.0f,  uvmax, uvmin, // Top right
+        xmax, ymin, zmax,    1.0f, 1.0f, 1.0f, 1.0f,  uvmax, uvmax, // Bottom right
+        xmin, ymin, zmin,    1.0f, 1.0f, 1.0f, 1.0f,  uvmin, uvmax, // Bottom left
+        xmin, ymax, zmin,    1.0f, 1.0f, 1.0f, 1.0f,  uvmin, uvmin  // Top left
     };
+    
+    
 
-    private final int[] rgElements = {2, 1, 0, //top triangle
-        0, 1, 3 // bottom triangle
-};
+    private final int[] rgElements = {0, 1, 2, 0, 2, 3};
 
+    
     int positionStride = 3;
     int colorStride = 4;
     int textureStride = 2;
@@ -57,11 +58,12 @@ public class slLevelSceneEditor {
         my_camera = new slCamera(new Vector3f(0, 0, 0f));
         my_camera.setOrthoProjection();
 
-        testShader =
-                new slShaderManager("vs_texture_1.glsl", "fs_texture_1.glsl");
+        testShader = new slShaderManager("vs_texture_1.glsl", "fs_texture_1.glsl");
 
-        testShader.compile_shader();
-        
+        int temp = testShader.compile_shader();
+        testShader.set_shader_program();
+        System.out.println(temp);
+
         testTexture = new slTextureManager("src/assets/shaders/texture.png");
 
         vaoID = glGenVertexArrays();
@@ -85,8 +87,7 @@ public class slLevelSceneEditor {
         glVertexAttribPointer(vpoIndex, positionStride, GL_FLOAT, false, vertexStride, 0);
         glEnableVertexAttribArray(vpoIndex);
 
-        glVertexAttribPointer(vcoIndex, colorStride, GL_FLOAT, false, vertexStride,
-                                                            positionStride * Float.BYTES);
+        glVertexAttribPointer(vcoIndex, colorStride, GL_FLOAT, false, vertexStride, positionStride * Float.BYTES);
         glEnableVertexAttribArray(vcoIndex);
 
         glVertexAttribPointer(vtoIndex, textureStride, GL_FLOAT, false, vertexStride, (positionStride + colorStride) * Float.BYTES);
@@ -96,36 +97,41 @@ public class slLevelSceneEditor {
         glBindVertexArray(0);
     }
 
-public void update(float dt) {
-    my_camera.relativeMoveCamera(dt*VFactor, dt*VFactor);
+    public void update(float dt) {
+        //my_camera.relativeMoveCamera(VFactor, VFactor);
+       
+        if (dt > 0) {
+            my_camera.defaultLookFrom.x -= dt * VFactor;
+            my_camera.defaultLookFrom.y -= dt * VFactor;
+            if (my_camera.getCurLookFrom().x < -FRUSTUM_RIGHT ) {
+                my_camera.restoreCamera();  // Restore camera to initial position
+                my_camera.setOrthoProjection();  // Reset projection matrix
+            }
+        }
+        // Set the clear color to blue (R=0, G=0, B=1, Alpha=1)
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    if (my_camera.getCurLookFrom().x < -FRUSTUM_RIGHT) {
-     my_camera.restoreCamera();
+        testShader.set_shader_program();
+        slShaderManager.loadMatrix4f("uProjMatrix", my_camera.getProjectionMatrix());
+        slShaderManager.loadMatrix4f("uViewMatrix", my_camera.getViewMatrix());
+        glBindVertexArray(vaoID);
+
+        glEnableVertexAttribArray(vpoIndex);
+        glEnableVertexAttribArray(vcoIndex);
+        glEnableVertexAttribArray(vtoIndex);
+
+        testTexture.bind_texture(); // Bind the texture before drawing
+
+        glDrawElements(GL_TRIANGLES, rgElements.length, GL_UNSIGNED_INT, 0);
+
+        testTexture.unbind_texture(); // Unbind the texture after drawing
+
+        glDisableVertexAttribArray(vpoIndex);
+        glDisableVertexAttribArray(vcoIndex);
+        glDisableVertexAttribArray(vtoIndex);
+
+        glBindVertexArray(0);
+        slShaderManager.detach_shader();
     }
-    // Set the clear color to blue (R=0, G=0, B=1, Alpha=1)
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    testShader.set_shader_program();
-    slShaderManager.loadMatrix4f("uProjMatrix", my_camera.getProjectionMatrix());
-    slShaderManager.loadMatrix4f("uViewMatrix", my_camera.getViewMatrix());
-    glBindVertexArray(vaoID);
-
-    glEnableVertexAttribArray(vpoIndex);
-    glEnableVertexAttribArray(vcoIndex);
-    glEnableVertexAttribArray(vtoIndex);
-
-    testTexture.bind_texture(); // Bind the texture before drawing
-
-    glDrawElements(GL_TRIANGLES, rgElements.length, GL_UNSIGNED_INT, 0);
-
-    testTexture.unbind_texture(); // Unbind the texture after drawing
-
-    glDisableVertexAttribArray(vpoIndex);
-    glDisableVertexAttribArray(vcoIndex);
-    glDisableVertexAttribArray(vtoIndex);
-
-    glBindVertexArray(0);
-    slShaderManager.detach_shader();
-}
 }

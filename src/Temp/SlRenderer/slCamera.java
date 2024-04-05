@@ -42,7 +42,6 @@ public class slCamera implements CameraInterface{
 
     @Override
     public void relativeMoveCamera(float deltaX, float deltaY) {
-        // Modify current lookFrom position based on relative movement
         curLookFrom.add(deltaX, deltaY, 0.0f);
     }
 
@@ -63,6 +62,7 @@ public class slCamera implements CameraInterface{
 
     @Override
     public Matrix4f getViewMatrix() {
+
         curLookFrom.set(defaultLookFrom);
         curLookAt.set(defaultLookAt);
         this.viewMatrix.identity();
@@ -77,7 +77,7 @@ public class slCamera implements CameraInterface{
     }
 
     public void restoreCamera() {
-        curLookFrom.set(defaultLookFrom); // Restore camera position to initial state
+        curLookFrom.set(0,0,0); // Restore camera position to initial state
     }
 
 }

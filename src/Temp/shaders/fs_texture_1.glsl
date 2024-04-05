@@ -1,4 +1,4 @@
-#version 430 core
+#version 430 core 
 
 uniform sampler2D TEX_SAMPLER;
 
