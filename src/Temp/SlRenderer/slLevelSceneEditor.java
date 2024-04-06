@@ -99,15 +99,15 @@ public class slLevelSceneEditor {
 
     public void update(float dt) {
         //my_camera.relativeMoveCamera(VFactor, VFactor);
-       
-        if (dt > 0) {
-            my_camera.defaultLookFrom.x -= dt * VFactor;
-            my_camera.defaultLookFrom.y -= dt * VFactor;
-            if (my_camera.getCurLookFrom().x < -FRUSTUM_RIGHT ) {
-                my_camera.restoreCamera();  // Restore camera to initial position
-                my_camera.setOrthoProjection();  // Reset projection matrix
-            }
+
+        my_camera.defaultLookFrom.x -= dt * VFactor;
+        my_camera.defaultLookFrom.y -= dt * VFactor;
+        if (my_camera.getCurLookFrom().x < -FRUSTUM_RIGHT ) {
+            my_camera.defaultLookFrom.x = 0;
+            my_camera.defaultLookFrom.y = 0;  // Restore camera to initial position
+            my_camera.setOrthoProjection();  // Reset projection matrix
         }
+      
         // Set the clear color to blue (R=0, G=0, B=1, Alpha=1)
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

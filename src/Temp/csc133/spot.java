@@ -31,6 +31,6 @@ public class spot {
                 defaultSB = 0.0f, defaultST = WIN_HEIGHT;
         public static final float defaultZNear = 0.0f, defaultZFar = 10.0f;
 
-        public static final float alpha = 400f;
+        public static final float alpha = 200f;
     
     }

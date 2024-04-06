@@ -98,7 +98,7 @@ public class slWindow {
     public void loop() {
         float beginTime = getTime();
         float endTime = getTime();
-        float dt = -1.0f;
+        float dt = getTime();
 
         while (!glfwWindowShouldClose(glfwWindow)){
             glfwPollEvents();
