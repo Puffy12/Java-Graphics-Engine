@@ -1,13 +1,15 @@
 package csc133;
 
-import SlRenderer.slSingleBatchRenderer;
+import SlRenderer.slWindow;
+import static SlRenderer.slSingleBatchRenderer.render;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class Main {
-    
-    public static void main(String[] args) {
-        slSingleBatchRenderer myrender = new SlRenderer.slSingleBatchRenderer();
-        myrender.render();
-    } // public static void main(String[] args)
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        slWindow sceneEditor = new slWindow();
+        sceneEditor.run();
+    }
+}
 
-    
-} // public class Main

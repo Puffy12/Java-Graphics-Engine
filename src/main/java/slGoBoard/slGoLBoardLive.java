@@ -5,7 +5,6 @@ public class slGoLBoardLive extends slGoLBoard{
 
     public slGoLBoardLive(int numRows, int numCols) {
         super(numRows, numCols);
-        //TODO Auto-generated constructor stub
     }
 
     public boolean return_Bool(int Row, int Col){

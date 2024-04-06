@@ -6,15 +6,12 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
+import static csc133.spot.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class slWindow {
 
-    private static long my_oglwindow = 0;
-    public static int WIN_WIDTH = spot.WIN_WIDTH, WIN_HEIGHT = spot.WIN_HEIGHT;
-    public static int WIN_POS_X = spot.WIN_POS_X, WIN_POS_Y = spot.WIN_POS_Y;
-    public static String WINDOW_TITLE = "CSC 133";
+public class slWindow {
 
     private static GLFWKeyCallback keyCallback;
     private static GLFWFramebufferSizeCallback fbCallback;
