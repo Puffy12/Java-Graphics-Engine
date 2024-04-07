@@ -98,13 +98,9 @@ public class slLevelSceneEditor {
     }
 
     public void update(float dt) {
-        //my_camera.relativeMoveCamera(VFactor, VFactor);
-
-        my_camera.defaultLookFrom.x -= dt * VFactor;
-        my_camera.defaultLookFrom.y -= dt * VFactor;
+        my_camera.relativeMoveCamera(VFactor*dt, VFactor*dt);
         if (my_camera.getCurLookFrom().x < -FRUSTUM_RIGHT ) {
-            my_camera.defaultLookFrom.x = 0;
-            my_camera.defaultLookFrom.y = 0;  // Restore camera to initial position
+            my_camera.restoreCamera(); // Restore camera to initial position
             my_camera.setOrthoProjection();  // Reset projection matrix
         }
       

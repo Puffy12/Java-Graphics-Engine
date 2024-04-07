@@ -138,7 +138,7 @@ public class slSingleBatchRenderer {
     
         // Initialize camera and shader manager
         my_camera = new slCamera(new Vector3f(camera_start));
-        my_camera.setProjection();
+        my_camera.setOrthoProjection();
         try {
             mysm0 = new slShaderManager("vs_0.glsl", "fs_0.glsl");
         } catch (FileNotFoundException e) {
