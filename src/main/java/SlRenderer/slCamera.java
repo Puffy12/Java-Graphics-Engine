@@ -4,9 +4,6 @@ package SlRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import static csc133.spot.*;
 
 interface CameraInterface {
@@ -75,17 +72,16 @@ class slCamera implements CameraInterface {
     public void setOrthoProjection() {
         projectionMatrix.identity();
         projectionMatrix.ortho(screen_left, screen_right,
-                screen_bottom, screen_top, zNear, zFar);
+                                    screen_bottom, screen_top, zNear, zFar);
     }
 
-    // Careful: this is camera movement to imitate an object moving right. So
+    // Careful: this is camera movement to imidate an object moving right. So
     // positive arguments are interpreted as negative increment to CURRENT position
     public void relativeMoveCamera(float deltaX, float deltaY) {
-        curLookFrom.set(new Vector3f(curLookFrom.x - deltaX , curLookFrom.y - deltaY, 0));
-
+        curLookFrom.x -= deltaX;
+        curLookFrom.y -= deltaY;
     }  // public void relativeMoveCamera(...)
 
-  
     void restoreCamera() {
         init_camera();
         curLookFrom.set(defaultLookFrom);

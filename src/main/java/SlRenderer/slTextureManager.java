@@ -1,4 +1,8 @@
 package SlRenderer;
+/*
+TODO:
+Make this a generic class with separate init_texture() for 2D textures.
+ */
 
 import org.lwjgl.BufferUtils;
 
@@ -17,9 +21,11 @@ interface TextureManagerInterface {
 }
 
 class slTextureManager implements  TextureManagerInterface {
-    private final String texFilepath;
-    private final int texID;
+    private String texFilepath;
+    private int texID;
     ByteBuffer texImage = null;
+
+    private int i =0, j = 0, k = 0;
 
     public slTextureManager(String filepath) {
         this.texFilepath = filepath;

@@ -3,8 +3,6 @@ package SlRenderer;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
-import slKeyListener.slKeyListener;
-import slKeyListener.slMouseListener;
 
 import static csc133.spot.*;
 import static org.lwjgl.glfw.Callbacks.*;
@@ -78,11 +76,6 @@ public class slWindow {
             throw new IllegalStateException("glfwCreateWindow(...) failed; bailing out!");
         }
 
-        glfwSetCursorPosCallback(glfwWindow, slMouseListener::mousePosCallback);
-        glfwSetMouseButtonCallback(glfwWindow, slMouseListener::mouseButtonCallback);
-        glfwSetScrollCallback(glfwWindow, slMouseListener::mouseScrollCallback);
-
-        glfwSetKeyCallback(glfwWindow, slKeyListener::keyCallback);
 
         glfwMakeContextCurrent(glfwWindow);
         glfwSwapInterval(1);
