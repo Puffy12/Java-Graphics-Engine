@@ -1,8 +1,10 @@
 package SlRenderer;
 
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
+import javax.swing.*;
 
 import static csc133.spot.*;
 import static org.lwjgl.glfw.Callbacks.*;
@@ -12,26 +14,20 @@ import static org.lwjgl.opengl.GL11C.*;
 // Added by hand -shankar:
 import static org.lwjgl.system.MemoryUtil.*;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import static SlUtils.slTime.getTime;
-
 
 public class slWindow {
 
     private long glfwWindow;
 
-    private static final float ccRed = 0.0f;
-    private static final float ccGreen = 0.0f;
-    private static final float ccBlue = 0.0f;
+    private static final float ccRed = 0.05f;
+    private static final float ccGreen = 0.05f;
+    private static final float ccBlue = 0.05f;
     private static final float ccAlpha = 1.0f;
 
     private static slWindow my_window = null;
-    private slLevelSceneEditor currentScene;
+    private slDrawablesManager minesweeper_drawable;
 
-
-    public slWindow() {
+    private slWindow() {
 
     }
 
@@ -42,23 +38,18 @@ public class slWindow {
         return slWindow.my_window;
     }
 
-    public void run() throws FileNotFoundException, IOException {
-        System.out.println("Walah");
-        init();
+    public void run(int num_mines) {
+        init(num_mines);
         loop();
-
         // Clean up:
         glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
-    
-    public void init() throws FileNotFoundException, IOException {
-        // error callback
-        GLFWErrorCallback.createPrint(System.err).set();
 
-        // Init GLFW
+    public void init(int num_mines) {
+        GLFWErrorCallback.createPrint(System.err).set();
         if (!glfwInit()) {
             throw new IllegalStateException("Could not initialize GLFW");
         }
@@ -66,16 +57,16 @@ public class slWindow {
         // Configure GLFW:
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        //glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE);
 
-        // Create window:
         glfwWindow = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WINDOW_TITLE, NULL, NULL);
         if (glfwWindow == NULL) {
             throw new IllegalStateException("glfwCreateWindow(...) failed; bailing out!");
         }
 
+        glfwSetCursorPosCallback(glfwWindow, slMouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, slMouseListener::mouseButtonCallback);
 
         glfwMakeContextCurrent(glfwWindow);
         glfwSwapInterval(1);
@@ -83,32 +74,27 @@ public class slWindow {
         glfwShowWindow(glfwWindow);
 
         GL.createCapabilities();
-
-        currentScene = new slLevelSceneEditor();
-        currentScene.init();
+        minesweeper_drawable = new slDrawablesManager(num_mines);
     }
 
     public void loop() {
-        float beginTime = getTime();
-        float endTime = getTime();
-        float dt = getTime();
-
+        Vector2i rcVec = new Vector2i(-1, -1);  // Row-Column Vector
         while (!glfwWindowShouldClose(glfwWindow)){
             glfwPollEvents();
+            rcVec.set(-1, -1);
+            if (slMouseListener.mouseButtonDown(0)) {
+                float xp = slMouseListener.getX();
+                float yp = slMouseListener.getY();
+                slMouseListener.mouseButtonDownReset(0);
+                rcVec = slTilesManager.getRowColFromXY(xp, yp);
+            }  //  if (slMouseListener.mouseButtonDown(0))
 
             glClearColor(ccRed, ccGreen, ccBlue, ccAlpha);
             glClear(GL_COLOR_BUFFER_BIT);
-
-            if (dt >= 0) {
-                currentScene.update(dt);
-            }
+            minesweeper_drawable.update(rcVec.x, rcVec.y);
 
             glfwSwapBuffers(glfwWindow);
+        }  //  while (!glfwWindowShouldClose(glfwWindow))
+    }  // public void loop()
 
-            endTime = getTime();
-            dt = endTime - beginTime;
-            beginTime = endTime;
-        }
-
-    }
-}
+}  //  public class slWindow

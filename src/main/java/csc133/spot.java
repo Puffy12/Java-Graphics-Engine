@@ -10,10 +10,13 @@ public class spot {
         public static String WINDOW_TITLE = "CSC 133";
         public static final int OGL_MATRIX_SIZE = 16;
     
-        public static int NUM_POLY_ROWS = 1, NUM_POLY_COLS = 1, POLYGON_LENGTH = 200;
+        //public static int NUM_POLY_ROWS = 1, NUM_POLY_COLS = 1, POLYGON_LENGTH = 200;
     
-        public static final float POLY_OFFSET = 20.0f, POLY_PADDING = 10.0f, SQUARE_LENGTH = 200;
-    
+       // public static final float POLY_OFFSET = 20.0f, POLY_PADDING = 10.0f, 
+        
+        public static int POLY_OFFSET = 40, POLYGON_LENGTH = 100, POLY_PADDING = 40,SQUARE_SIZE = 200;;
+        public static int NUM_POLY_ROWS = 9, NUM_POLY_COLS = 6;
+
         public static final float FRUSTUM_LEFT = 0.0f,   
                 FRUSTUM_RIGHT = (float)WIN_WIDTH,
                 FRUSTUM_BOTTOM = 0.0f, 
