@@ -102,6 +102,7 @@ public class slDrawablesManager {
         float[] updatedVertexArray = board_manager.getVertexArray();
 
         // Check if vertex data has changed
+        //
         if (!areArraysEqual(vertexArray, updatedVertexArray)) {
             // Update vertex buffer data
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
@@ -114,7 +115,7 @@ public class slDrawablesManager {
 
         // Set shader program
         shaderManager.set_shader_program();
-        
+        System.out.println(updatedVertexArray.length);
         // Draw elements
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, vertexIndexArray.length, GL_UNSIGNED_INT, 0);
