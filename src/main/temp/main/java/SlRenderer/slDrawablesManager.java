@@ -33,15 +33,16 @@ public class slDrawablesManager {
         board_manager = new slTilesManager(num_mines);
         vertexArray = board_manager.getVertexArray();
         vertexIndexArray = board_manager.getVertexIndicesArray();
+        board_manager.printMineSweeperArray();
 
         initRendering();
       
-        shaderManager = new slShaderManager("vs_texture_2.glsl", "fs_texture_2.glsl");
+        shaderManager = new slShaderManager("vs_0.glsl", "fs_0.glsl");
         shader = shaderManager.compile_shader();
         System.out.println("Shader Status: " + shader);
         shaderManager.set_shader_program();
 
-        String filename = System.getProperty("user.dir") + "/src/assets/shaders/texture.png" ;
+        String filename = System.getProperty("user.dir") + "/src/assets/shaders/FourTextures.png" ;
         textureManager = new slTextureManager(filename);
     }
 
@@ -85,45 +86,37 @@ public class slDrawablesManager {
         return buffer;
     }
 
+    public void update(int row, int col) {
+        if (row >= 0 && col >= 0) {
+            int status = board_manager.getCellStatus(row, col);
+            //System.out.println(status);
+            board_manager.updateForPolygonStatusChange(row, col, true);
 
-    public void update(float x, float y, float size) {
-        // Predefined color (for example, red)
-        float[] color = {1.0f, 0.0f, 0.0f}; // Red
-    
-        // Calculate the vertices of the square
-        float[] vertices = {
-            x, y, 0.0f,
-            x + size, y, 0.0f,
-            x + size, y + size, 0.0f,
-            x, y + size, 0.0f
-        };
-    
-        // Bind and set vertex buffer data
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferData(GL_ARRAY_BUFFER, createBuffer(vertices), GL_STATIC_DRAW);
+            // Update vertex buffer data if necessary
+            float[] updatedVertexArray = board_manager.getVertexArray();
+            if (!areArraysEqual(vertexArray, updatedVertexArray)) {
+                glBindBuffer(GL_ARRAY_BUFFER, vboID);
+                glBufferData(GL_ARRAY_BUFFER, createBuffer(updatedVertexArray), GL_DYNAMIC_DRAW);
+                // Update vertex array reference
+                System.arraycopy(updatedVertexArray, 0, vertexArray, 0, updatedVertexArray.length);
+            }
+        
+        }
     
         // Set shader program
         shaderManager.set_shader_program();
     
-        // Bind vertex array object
+        // Bind VAO and draw elements    
+        // Set texture coordinates based on tile status (You need to implement this logic)
+        // ...
+    
+        // Bind the correct texture based on the tile status (You need to implement this logic)
+        // ...
+        //textureManager.bind_texture();
         glBindVertexArray(vaoID);
-        
-        // Specify the vertex attribute pointers
-        int positionAttrib = glGetAttribLocation(shader, "aPos");
-        glEnableVertexAttribArray(positionAttrib);
-        glVertexAttribPointer(positionAttrib, 3, GL_FLOAT, false, 0, 0);
-    
-        // Set the color directly in the shader
-        int colorUniform = glGetUniformLocation(shader, "uColor");
-        glUniform3f(colorUniform, color[0], color[1], color[2]);
-    
-        // Draw elements
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        
-        // Unbind vertex array object
+        glDrawElements(GL_TRIANGLES, vertexIndexArray.length, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
-    
     
 
 

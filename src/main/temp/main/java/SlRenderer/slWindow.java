@@ -75,6 +75,7 @@ public class slWindow {
 
         GL.createCapabilities();
         minesweeper_drawable = new slDrawablesManager(num_mines);
+        
     }
 
     
@@ -98,7 +99,7 @@ public class slWindow {
             glClearColor(ccRed, ccGreen, ccBlue, ccAlpha);
             glClear(GL_COLOR_BUFFER_BIT);
             //minesweeper_drawable.update(rcVec.x, rcVec.y);
-            minesweeper_drawable.update(0.0f, 0.0f, 5.0f);
+            minesweeper_drawable.update(5, 5);
             glfwSwapBuffers(glfwWindow);
         }  //  while (!glfwWindowShouldClose(glfwWindow))
     }  // public void loop()

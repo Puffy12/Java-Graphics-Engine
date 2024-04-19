@@ -73,56 +73,67 @@ public class slTilesManager {
     // Given a index, row, column, fill up the vertices of the square. "index" is the index
     // to the vert_array, a multiple of vps * fpv
     private void fillSquareCoordinates(int index, int row, int col, float[] vert_array) {
-        float x = col * SQUARE_SIZE;
-        float y = row * SQUARE_SIZE;
+        float x = col * SQUARE_SIZE + POLY_OFFSET + col * POLY_PADDING;
+        float y = row * SQUARE_SIZE + POLY_OFFSET + row * POLY_PADDING;
         float z = ZMIN;
     
-        // Vertex 1
+        // Vertex 1 (Bottom Left)
         vert_array[index++] = x;
         vert_array[index++] = y;
         vert_array[index++] = z;
+        // Set color to red (you can adjust the color as needed)
+        vert_array[index++] = 1.0f; // Red
+        vert_array[index++] = 0.0f; // Green
+        vert_array[index++] = 0.0f; // Blue
+        vert_array[index++] = 1.0f; // Alpha
     
-        // Vertex 2
-        vert_array[index++] = x + SQUARE_SIZE;
+        // Vertex 2 (Bottom Right)
+        vert_array[index++] = x + POLYGON_LENGTH;
         vert_array[index++] = y;
         vert_array[index++] = z;
+        // Set color to red
+        vert_array[index++] = 1.0f; 
+        vert_array[index++] = 0.0f; 
+        vert_array[index++] = 0.0f; 
+        vert_array[index++] = 1.0f; 
     
-        // Vertex 3
-        vert_array[index++] = x + SQUARE_SIZE;
-        vert_array[index++] = y + SQUARE_SIZE;
+        // Vertex 3 (Top Right)
+        vert_array[index++] = x + POLYGON_LENGTH;
+        vert_array[index++] = y + POLYGON_LENGTH;
         vert_array[index++] = z;
+        // Set color to red
+        vert_array[index++] = 1.0f; 
+        vert_array[index++] = 0.0f; 
+        vert_array[index++] = 0.0f;
+        vert_array[index++] = 1.0f; 
     
-        // Vertex 4
+        // Vertex 4 (Top Left)
         vert_array[index++] = x;
-        vert_array[index++] = y + SQUARE_SIZE;
+        vert_array[index++] = y + POLYGON_LENGTH;
         vert_array[index++] = z;
-
-    }  //  private void fillSquareCoordinates(int indx, int row, int col, float[] vert_array)
+        // Set color to red
+        vert_array[index++] = 1.0f;
+        vert_array[index++] = 0.0f;
+        vert_array[index++] = 0.0f;
+        vert_array[index++] = 1.0f; 
+    }//  private void fillSquareCoordinates(int indx, int row, int col, float[] vert_array)
 
     public void setVertexIndicesArray() {
-        // Implementation to set up vertex indices array
         int numSquares = NUM_POLY_COLS * NUM_POLY_ROWS;
-        int numVerticesPerSquare = vps * fpv;
-        int numVertices = numSquares * numVerticesPerSquare;
-    
-        // Each square consists of two triangles
-        int[] indices = new int[numSquares * 6];
+        int numIndicesPerSquare = 6; // 2 triangles per square
+        vertexIndicesArray = new int[numSquares * numIndicesPerSquare];
         int index = 0;
         for (int i = 0; i < numSquares; i++) {
-            int baseVertexIndex = i * numVerticesPerSquare;
-    
+            int baseVertexIndex = i * vps; // vps = vertices per square
             // Triangle 1
-            indices[index++] = baseVertexIndex;
-            indices[index++] = baseVertexIndex + 1;
-            indices[index++] = baseVertexIndex + 2;
-    
+            vertexIndicesArray[index++] = baseVertexIndex;
+            vertexIndicesArray[index++] = baseVertexIndex + 1;
+            vertexIndicesArray[index++] = baseVertexIndex + 2;
             // Triangle 2
-            indices[index++] = baseVertexIndex;
-            indices[index++] = baseVertexIndex + 2;
-            indices[index++] = baseVertexIndex + 3;
+            vertexIndicesArray[index++] = baseVertexIndex;
+            vertexIndicesArray[index++] = baseVertexIndex + 2;
+            vertexIndicesArray[index++] = baseVertexIndex + 3;
         }
-    
-        vertexIndicesArray = indices;
     } //  public int[] setVertexIndicesArray(...)
 
     public void updateForPolygonStatusChange(int row, int col, boolean printStats) {

@@ -1,3 +1,5 @@
+a text verson of my .glsl fragment shader 
+
 #version 430 core
 
 in vec4 fColor;
